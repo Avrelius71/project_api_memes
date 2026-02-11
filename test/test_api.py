@@ -1,8 +1,10 @@
 import pytest
 import allure
-from project_api_memes.conftest import negative_data_post
-from project_api_memes.conftest import data1
-from project_api_memes.conftest import negative_data_put
+from project_api_memes.data import negative_data_post
+from project_api_memes.data import data1
+from project_api_memes.data import negative_data_put
+from project_api_memes.data import data_aus
+from project_api_memes.data import data_aus_negative
 
 
 @allure.feature("GET /meme")
@@ -10,6 +12,7 @@ from project_api_memes.conftest import negative_data_put
 def test_get_all_memes_200(check_all_memes):
     check_all_memes.get_all_memes()
     check_all_memes.check_status_code(200)
+    check_all_memes.check_json()
 
 
 @allure.feature("GET /meme")
@@ -24,6 +27,7 @@ def test_get_all_memes_401(check_all_memes):
 def test_get_one_memes_200(check_one_memes, create_and_delete_mem):
     check_one_memes.get_one_memes(create_and_delete_mem)
     check_one_memes.check_status_code(200)
+    check_one_memes.check_id(create_and_delete_mem)
 
 
 @allure.feature("GET /meme/{id}")
@@ -42,9 +46,11 @@ def test_get_one_memes_401(check_one_memes, create_and_delete_mem):
 
 @allure.feature("DELETE /meme/{id}")
 @allure.title("Удалить мем — успешный ответ 200")
-def test_delete_memes_200(delete_one_memes, create_mem):
+def test_delete_memes_200(delete_one_memes, create_mem, check_one_memes):
     delete_one_memes.delete_memes(create_mem)
     delete_one_memes.check_status_code(200)
+    check_one_memes.get_one_memes(create_mem)
+    check_one_memes.check_status_code(404)
 
 
 @allure.feature("DELETE /meme/{id}")
@@ -67,6 +73,7 @@ def test_delete_memes_401(delete_one_memes, create_mem):
 def test_post_memes_200(create_post_memes):
     create_post_memes.post_memes(data1)
     create_post_memes.check_status_code(200)
+    create_post_memes.check_response_body_post()
 
 
 @allure.feature("POST /meme")
@@ -89,6 +96,7 @@ def test_post_memes_401(create_post_memes):
 def test_put_memes_200(create_and_delete_mem, put_old_memes, put_payload):
     put_old_memes.put_memes(create_and_delete_mem, put_payload)
     put_old_memes.check_status_code(200)
+    put_old_memes.check_response_body_put(put_payload, create_and_delete_mem)
 
 
 @allure.feature("PUT /meme/{id}")
@@ -104,3 +112,33 @@ def test_put_memes_400(create_and_delete_mem, put_old_memes, data):
 def test_put_memes_401(create_and_delete_mem, put_old_memes, put_payload):
     put_old_memes.put_memes(create_and_delete_mem, put_payload, headers={'Authorization': 'M'})
     put_old_memes.check_status_code(401)
+
+
+@allure.feature("POST /authorize")
+@allure.title("Проверяем авторизацию — 200")
+def test_post_aus_200(post_authorize):
+    post_authorize.post_aus(data_aus)
+    post_authorize.check_status_code(200)
+    post_authorize.check_name()
+
+
+@allure.feature("POST /authorize")
+@allure.title("Проверяем невалидные данные - 400")
+@pytest.mark.parametrize('data', data_aus_negative)
+def test_post_aus_400(post_authorize, data):
+    post_authorize.post_aus(data)
+    post_authorize.check_status_code(400)
+
+
+@allure.feature("GET /authorize/{token}")
+@allure.title("Проверить жив ли токен - 200")
+def test_get_token_200(get_my_token, create_token):
+    get_my_token.get_token(create_token)
+    get_my_token.check_status_code(200)
+
+
+@allure.feature("GET /authorize/{token}")
+@allure.title("Проверить несуществующий токен - 404")
+def test_get_token_404(get_my_token):
+    get_my_token.get_token("asdf")
+    get_my_token.check_status_code(404)
