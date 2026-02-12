@@ -9,8 +9,6 @@ class Endpoint:
     json = None
     headers = {'Authorization': 'UkzafrVWZKgXRXN'}
 
-
-
     @allure.step('Check status code')
     def check_status_code(self, code):
         assert self.response.status_code == code
