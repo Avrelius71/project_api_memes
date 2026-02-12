@@ -73,7 +73,7 @@ def test_delete_memes_401(delete_one_memes, create_mem):
 def test_post_memes_200(create_post_memes):
     create_post_memes.post_memes(data1)
     create_post_memes.check_status_code(200)
-    create_post_memes.check_response_body_post()
+    create_post_memes.check_response_body(data1)
 
 
 @allure.feature("POST /meme")
@@ -96,7 +96,7 @@ def test_post_memes_401(create_post_memes):
 def test_put_memes_200(create_and_delete_mem, put_old_memes, put_payload):
     put_old_memes.put_memes(create_and_delete_mem, put_payload)
     put_old_memes.check_status_code(200)
-    put_old_memes.check_response_body_put(put_payload, create_and_delete_mem)
+    put_old_memes.check_response_body(put_payload, create_and_delete_mem)
 
 
 @allure.feature("PUT /meme/{id}")

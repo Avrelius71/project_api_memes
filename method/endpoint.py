@@ -7,16 +7,9 @@ class Endpoint:
     url = 'http://memesapi.course.qa-practice.com'
     response = None
     json = None
-    headers = {'Authorization': 'MduMWg3KQZ5CuSA'}
+    headers = {'Authorization': 'UkzafrVWZKgXRXN'}
 
-# Не знаю как использовать!(
 
-    # def aus(self):
-    #     data = {'name': 'Artem'}
-    #     self.response = requests.post(f'{self.url}/authorize', json=data)
-    #     self.response = self.response.json()
-    #     token = self.response['token']
-    #     return token
 
     @allure.step('Check status code')
     def check_status_code(self, code):
@@ -32,15 +25,9 @@ class Endpoint:
             f"Expected id={expected_id}, got {self.json['id']}"
 
     @allure.step('Check response body')
-    def check_response_body_post(self):
-        assert self.json['text'] == data1['text']
-        assert self.json['url'] == data1['url']
-        assert self.json['tags'] == data1['tags']
-        assert self.json['tags'] == data1['tags']
-
-    @allure.step('Check response body')
-    def check_response_body_put(self, expected_payload, expected_id):
-        assert int(self.json['id']) == expected_id
+    def check_response_body(self, expected_payload, expected_id=None):
+        if expected_id:
+            assert int(self.json['id']) == expected_id
         assert self.json['text'] == expected_payload['text']
         assert self.json['url'] == expected_payload['url']
         assert self.json['tags'] == expected_payload['tags']

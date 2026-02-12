@@ -80,4 +80,5 @@ def put_payload(create_and_delete_mem):
 def create_token(post_authorize):
     payload = {'name': 'Artem'}
     post_authorize.post_aus(payload)
-    yield post_authorize.json['token']
+    token = post_authorize.json['token']
+    yield token
